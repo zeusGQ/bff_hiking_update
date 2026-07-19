@@ -271,6 +271,81 @@
             transform: scale(1.5);
         }
 
+        /* --- MOBILE PORTRAIT ARCHITECTURE --- */
+        .portrait-mode .slide { 
+            padding: 60px 40px !important; 
+        }
+        
+        /* Scale down the massive desktop fonts dynamically */
+        .portrait-mode h1, .portrait-mode [style*="font-size: 160px"], .portrait-mode [style*="font-size: 120px"] {
+            font-size: 110px !important;
+            line-height: 1.1 !important;
+        }
+        
+        /* Stack the headers and turn the horizontal rule into an underline */
+        .portrait-mode h2, .portrait-mode [style*="font-size: 80px"] {
+            font-size: 80px !important;
+            flex-direction: column;
+            text-align: center;
+            gap: 20px;
+            margin-bottom: 40px !important;
+        }
+        .portrait-mode h2::after { 
+            flex-grow: 0;
+            width: 120px; 
+            height: 6px; 
+        }
+        
+        .portrait-mode h3, .portrait-mode [style*="font-size: 72px"], .portrait-mode [style*="font-size: 64px"] {
+            font-size: 64px !important;
+        }
+        
+        .portrait-mode p, .portrait-mode [style*="font-size: 36px"], .portrait-mode [style*="font-size: 32px"], .portrait-mode [style*="font-size: 28px"] {
+            font-size: 40px !important;
+        }
+        
+        .portrait-mode [style*="font-size: 26px"], .portrait-mode [style*="font-size: 24px"], .portrait-mode [style*="font-size: 22px"], .portrait-mode [style*="font-size: 20px"] {
+            font-size: 34px !important;
+        }
+        
+        /* Force grids to stack vertically */
+        .portrait-mode .layout-grid {
+            grid-template-columns: 1fr !important;
+            gap: 40px !important;
+            margin-top: 20px !important;
+        }
+        
+        .portrait-mode .card {
+            padding: 40px 30px !important;
+            text-align: center;
+        }
+        
+        .portrait-mode .quote-block {
+            font-size: 52px !important;
+            padding: 40px 0 0 0 !important;
+            border-left: none !important;
+            border-top: 6px solid var(--burnt-orange) !important;
+            text-align: center;
+        }
+        
+        .portrait-mode .stat-huge, .portrait-mode [style*="font-size: 130px"] {
+            font-size: 140px !important;
+        }
+        
+        .portrait-mode .slide-content {
+            text-align: center !important;
+        }
+
+        .portrait-mode .progress-container {
+            bottom: 25px !important;
+        }
+        
+        /* Larger tap targets for mobile dots */
+        .portrait-mode .progress-dot {
+            width: 16px;
+            height: 16px;
+        }
+
         /* --- PDF PRINT OVERRIDES --- */
         @media print {
             @page {
@@ -486,6 +561,7 @@
                 this.progressBar = document.getElementById('progress-bar');
                 this.currentSlide = 0;
                 this.totalSlides = this.slides.length;
+                this.isSwiping = false; // Prevents double-skipping on touch
                 
                 this.init();
             }
@@ -517,18 +593,62 @@
                     }
                 });
                 
+                // Touch Navigation for Mobile
+                let touchStartX = 0;
+                let touchStartY = 0;
+                
+                this.stage.addEventListener('touchstart', (e) => {
+                    touchStartX = e.changedTouches[0].screenX;
+                    touchStartY = e.changedTouches[0].screenY;
+                }, {passive: true});
+                
+                this.stage.addEventListener('touchend', (e) => {
+                    const touchEndX = e.changedTouches[0].screenX;
+                    const touchEndY = e.changedTouches[0].screenY;
+                    
+                    const diffX = Math.abs(touchEndX - touchStartX);
+                    const diffY = Math.abs(touchEndY - touchStartY);
+                    
+                    // Only trigger if horizontal swipe is greater than vertical
+                    if (diffX > 50 && diffX > diffY) {
+                        this.isSwiping = true;
+                        if (touchEndX < touchStartX) {
+                            this.nextSlide();
+                        } else {
+                            this.prevSlide();
+                        }
+                        // Reset flag to prevent click event overlap
+                        setTimeout(() => this.isSwiping = false, 300);
+                    }
+                }, {passive: true});
+                
                 // Click to advance
                 this.stage.addEventListener('click', () => {
-                    this.nextSlide();
+                    if (!this.isSwiping) {
+                        this.nextSlide();
+                    }
                 });
             }
             
             scaleStage() {
                 const winW = window.innerWidth;
                 const winH = window.innerHeight;
-                // Scale factor to fit the 1920x1080 stage inside the window
-                const scale = Math.min(winW / 1920, winH / 1080);
-                this.stage.style.transform = `scale(${scale})`;
+                
+                if (winH > winW) {
+                    // Mobile Portrait Mode (Vertical Screen)
+                    this.stage.classList.add('portrait-mode');
+                    this.stage.style.width = '1080px';
+                    this.stage.style.height = '1920px';
+                    const scale = Math.min(winW / 1080, winH / 1920);
+                    this.stage.style.transform = `scale(${scale})`;
+                } else {
+                    // Desktop Landscape Mode (Horizontal Screen)
+                    this.stage.classList.remove('portrait-mode');
+                    this.stage.style.width = '1920px';
+                    this.stage.style.height = '1080px';
+                    const scale = Math.min(winW / 1920, winH / 1080);
+                    this.stage.style.transform = `scale(${scale})`;
+                }
             }
             
             goToSlide(index) {
