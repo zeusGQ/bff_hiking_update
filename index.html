@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BFF Men’s Hiking Ministry - Mid-Year Update</title>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,700&family=Lora:wght@600;700&display=swap');
+
+        :root {
+            /* Trailhead Editorial Color Palette */
+            --pine-dark: #0D1610;
+            --pine-main: #1A2F22;
+            --canvas-bone: #EFECE5;
+            --canvas-dark: #DCD6C8;
+            --burnt-orange: #C6532B;
+            --sage-light: #9EAC9C;
+            
+            --text-light: #F7F5F0;
+            --text-dark: #1A231C;
+            
+            --font-heading: 'Fraunces', serif;
+            --font-body: 'DM Sans', sans-serif;
+            
+            /* Easing for buttery slide transitions */
+            --transition-smooth: 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body, html {
+            width: 100vw;
+            height: 100vh;
+            background-color: var(--pine-dark);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden; 
+            font-family: var(--font-body);
+            color: var(--text-dark);
+        }
+
+        /* Core Frontend-Slides Architecture: Fixed 1920x1080 stage scaled by JS */
+        .deck-stage {
+            position: relative;
+            width: 1920px;
+            height: 1080px;
+            background-color: var(--canvas-bone);
+            transform-origin: center center;
+            overflow: hidden;
+            box-shadow: 0 0 50px rgba(0,0,0,0.5);
+            /* Custom laser pointer */
+            cursor: url('data:image/svg+xml;utf8,<svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><circle cx="16" cy="16" r="4" fill="%23C6532B"/><circle cx="16" cy="16" r="10" fill="%23C6532B" opacity="0.4"/></svg>') 16 16, auto !important;
+        }
+
+        /* Inner Editorial Border */
+        .deck-stage::after {
+            content: '';
+            position: absolute;
+            inset: 20px;
+            border: 1px solid rgba(0,0,0,0.1);
+            pointer-events: none;
+            z-index: 99;
+        }
+
+        /* SVG Noise Filter for Canvas Texture */
+        .deck-stage::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.08'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        /* Topographic Map background for Pine slides */
+        .bg-topo {
+            position: absolute;
+            inset: -10%;
+            width: 120%;
+            height: 120%;
+            background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5z' fill='%239EAC9C' fill-opacity='0.1' fill-rule='evenodd'/%3E%3C/svg%3E");
+            z-index: 1;
+        }
+
+        /* Slide Vignette for depth */
+        .slide {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 120px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity var(--transition-smooth), transform var(--transition-smooth);
+            transform: translateY(20px);
+            z-index: 10;
+            box-shadow: inset 0 0 150px rgba(0,0,0,0.05);
+        }
+
+        .slide.active {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+            z-index: 20;
+        }
+
+        .slide-content {
+            max-width: 1400px;
+            width: 100%;
+            position: relative;
+            z-index: 21;
+        }
+
+        /* Slide Theme Variants */
+        .slide.theme-pine {
+            background-color: var(--pine-main);
+            color: var(--text-light);
+            box-shadow: inset 0 0 150px rgba(0,0,0,0.4);
+        }
+        
+        .slide.theme-pine ~ .deck-stage::after {
+            border-color: rgba(255,255,255,0.1);
+        }
+
+        .slide.theme-pine h1, .slide.theme-pine h2, .slide.theme-pine h3 {
+            color: var(--text-light);
+        }
+
+        .slide.theme-pine p {
+            color: var(--sage-light);
+        }
+
+        h1, h2, h3, h4 {
+            font-family: var(--font-heading);
+            font-weight: 700;
+            line-height: 1.1;
+        }
+
+        h1 {
+            font-size: 130px;
+            letter-spacing: -0.02em;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            font-size: 80px;
+            margin-bottom: 60px;
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+        
+        /* Rugged horizontal rule for H2s */
+        h2::after {
+            content: '';
+            flex-grow: 1;
+            height: 4px;
+            background-color: var(--burnt-orange);
+            display: inline-block;
+        }
+
+        /* Targeted fix for the old-style Fraunces 'J' */
+        .straight-j {
+            font-family: 'Lora', serif;
+            display: inline-block;
+        }
+
+        h3 {
+            font-size: 48px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        p {
+            font-size: 32px;
+            line-height: 1.5;
+            margin-bottom: 30px;
+            font-weight: 400;
+        }
+
+        .accent-text {
+            color: var(--burnt-orange);
+            font-style: italic;
+        }
+
+        .quote-block {
+            font-family: var(--font-heading);
+            font-style: italic;
+            font-size: 64px;
+            line-height: 1.2;
+            border-left: 8px solid var(--burnt-orange);
+            padding-left: 60px;
+            margin: 60px 0;
+            color: inherit;
+        }
+
+        .layout-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 60px;
+            margin-top: 40px;
+        }
+
+        .card {
+            border: 2px solid var(--canvas-dark);
+            padding: 50px;
+            background: rgba(255, 255, 255, 0.4);
+            transition: transform 0.3s ease;
+        }
+        
+        .theme-pine .card {
+            border-color: rgba(158, 172, 156, 0.3);
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .label {
+            display: inline-block;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-size: 20px;
+            font-weight: 700;
+            background-color: var(--burnt-orange);
+            color: var(--text-light);
+            padding: 8px 16px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+
+        .stat-huge {
+            font-family: var(--font-heading);
+            font-size: 160px;
+            line-height: 1;
+            color: var(--burnt-orange);
+            margin: 20px 0;
+        }
+
+        .progress-container {
+            position: absolute;
+            bottom: 40px;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            z-index: 150;
+        }
+
+        .progress-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: rgba(0,0,0,0.2);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .theme-pine ~ .progress-container .progress-dot {
+            background-color: rgba(255,255,255,0.2);
+        }
+
+        .progress-dot.active {
+            background-color: var(--burnt-orange);
+            transform: scale(1.5);
+        }
+
+        /* --- PDF PRINT OVERRIDES --- */
+        @media print {
+            @page {
+                size: 16in 9in; /* Force standard 16:9 widescreen ratio for print */
+                margin: 0;
+            }
+            
+            body, html {
+                background-color: var(--canvas-bone);
+                height: auto;
+                width: 100%;
+                overflow: visible !important;
+                display: block;
+            }
+
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            .deck-stage {
+                width: 100%;
+                height: auto;
+                transform: none !important;
+                box-shadow: none;
+                overflow: visible !important;
+            }
+
+            .slide {
+                position: relative !important;
+                opacity: 1 !important;
+                transform: none !important;
+                display: flex !important;
+                width: 100vw;
+                height: 100vh;
+                page-break-after: always; /* Unstack and put on new pages */
+                break-after: page;
+                z-index: 1 !important;
+            }
+
+            .progress-container {
+                display: none !important; /* Hide the navigation dots on the PDF */
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Fixed 16:9 Stage -->
+    <div class="deck-stage" id="stage">
+
+        <section class="slide theme-pine active">
+            <div class="bg-topo"></div>
+            <div class="slide-content" style="text-align: center;">
+                <span class="label" style="background-color: var(--sage-light); color: var(--pine-dark);">Mid-Year Update</span>
+                <h1 style="font-size: 160px; margin-top: 40px;">BFF Men’s <br><span class="accent-text">Hiking Ministry</span></h1>
+                <p style="text-transform: uppercase; letter-spacing: 0.2em; font-size: 28px; margin-top: 60px; color: var(--text-light);">July 2026</p>
+            </div>
+        </section>
+
+        <section class="slide">
+            <div class="slide-content">
+                <h2>The Trail Guides</h2>
+                <div class="layout-grid" style="gap: 100px;">
+                    <div style="border-top: 4px solid var(--pine-dark); padding-top: 40px;">
+                        <h3 style="font-size: 72px; margin-bottom: 10px;"><span class="straight-j">J</span>erome Epps</h3>
+                        <p style="color: var(--burnt-orange); font-weight: 700; text-transform: uppercase; font-size: 24px; letter-spacing: 0.1em;">Leadership Team</p>
+                    </div>
+                    <div style="border-top: 4px solid var(--pine-dark); padding-top: 40px;">
+                        <h3 style="font-size: 72px; margin-bottom: 10px;">Xavier Fowler</h3>
+                        <p style="color: var(--burnt-orange); font-weight: 700; text-transform: uppercase; font-size: 24px; letter-spacing: 0.1em;">Leadership Team</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="slide theme-pine">
+            <div class="bg-topo"></div>
+            <div class="slide-content">
+                <span class="label">Our Mission</span>
+                <div class="quote-block" style="color: var(--text-light);">
+                    "Empowering Christian men to be physically capable and spiritually grounded leaders who serve their families, church and community."
+                </div>
+                <p style="font-family: var(--font-heading); font-size: 36px; margin-top: 60px;">
+                    "The Sovereign LORD is my strength; he makes my feet like the feet of a deer, he enables me to tread on the heights..."
+                    <br><span style="color: var(--burnt-orange); font-style: italic;">— Habakkuk 3:19</span>
+                </p>
+            </div>
+        </section>
+
+        <section class="slide">
+            <div class="slide-content">
+                <h2>The Three Pillars</h2>
+                
+                <div class="layout-grid">
+                    <div class="card">
+                        <h3 style="color: var(--pine-main);">Physical Health</h3>
+                        <p style="font-weight: 700; font-size: 22px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--burnt-orange); margin-bottom: 15px;">Education</p>
+                        <p style="font-size: 26px;">Bi-weekly topics including info on blood sugar, resting metabolic rates, and home body weight workouts.</p>
+                    </div>
+                    
+                    <div class="card">
+                        <h3 style="color: var(--pine-main);">Spiritual Grounding</h3>
+                        <p style="font-weight: 700; font-size: 22px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--burnt-orange); margin-bottom: 15px;">Foundations</p>
+                        <p style="font-size: 26px;">Being transformed into the image of Jesus. How do we learn and grow to see ourselves like Christ sees us?</p>
+                    </div>
+                    
+                    <div class="card">
+                        <h3 style="color: var(--pine-main);">Building Character</h3>
+                        <p style="font-weight: 700; font-size: 22px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--burnt-orange); margin-bottom: 15px;">The Calling</p>
+                        <p style="font-size: 26px;">A reminder on why men are called to be Godly leaders and what that looks like in the home, work, and everyday life.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="slide">
+            <div class="slide-content">
+                <span class="label">Looking Ahead</span>
+                <h2 style="margin-bottom: 40px;">H2 2026 Trail Calendar</h2>
+                
+                <div class="layout-grid" style="grid-template-columns: 1fr 1fr; gap: 40px;">
+                    
+                    <!-- Standard Hike Timeline -->
+                    <div class="card" style="border: none; background: transparent; padding: 0;">
+                        <h3 style="font-size: 40px; margin-bottom: 30px;">Standard Hike Schedule</h3>
+                        <div style="border-left: 4px solid var(--pine-dark); padding-left: 30px; margin-bottom: 40px;">
+                            <p style="font-family: var(--font-heading); font-size: 48px; font-weight: 700; color: var(--burnt-orange); margin-bottom: 5px;">7:30 am</p>
+                            <p style="font-weight: 700; margin-bottom: 5px;">The Trail Begins</p>
+                            <p style="font-size: 24px;">Includes the main hiking session and teaching time.</p>
+                        </div>
+                        <div style="border-left: 4px solid var(--canvas-dark); padding-left: 30px;">
+                            <p style="font-family: var(--font-heading); font-size: 48px; font-weight: 700; color: var(--sage-light); margin-bottom: 5px;">8:45 am</p>
+                            <p style="font-weight: 700; margin-bottom: 5px;">The Send-Off</p>
+                            <p style="font-size: 24px;">Conclude session with group prayer.</p>
+                        </div>
+                    </div>
+
+                    <!-- Upcoming Dates -->
+                    <div class="card" style="background-color: var(--pine-dark); color: var(--text-light); border: none;">
+                        <div style="margin-bottom: 40px;">
+                            <h3 style="color: var(--burnt-orange); font-size: 36px; margin-bottom: 5px;"><span class="straight-j">J</span>uly 25</h3>
+                            <p style="font-weight: 700; font-size: 28px; margin-bottom: 5px; color: var(--text-light);">Barfield Park Trail</p>
+                            <p style="font-size: 22px; color: var(--sage-light);">Mid-summer morning hike.</p>
+                        </div>
+                        <div style="margin-bottom: 40px;">
+                            <h3 style="color: var(--burnt-orange); font-size: 36px; margin-bottom: 5px;">October 3</h3>
+                            <p style="font-weight: 700; font-size: 28px; margin-bottom: 5px; color: var(--text-light);">Bledsoe Creek</p>
+                            <p style="font-size: 22px; color: var(--sage-light);">Autumn kickoff hike.</p>
+                        </div>
+                        <div style="border-top: 1px solid var(--sage-light); padding-top: 30px;">
+                            <span class="label" style="background-color: var(--sage-light); color: var(--pine-dark); font-size: 16px;">Flagship Event</span>
+                            <h3 style="color: var(--text-light); font-size: 42px; margin: 10px 0;">November 6 – 8</h3>
+                            <p style="font-weight: 700; font-size: 28px; color: var(--burnt-orange); margin-bottom: 5px;">Fall Creek Falls Retreat</p>
+                            <p style="font-size: 22px; color: var(--sage-light);">Multi-night adventure for 15 participants.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="slide theme-pine">
+            <div class="slide-content">
+                <h2>YTD Growth & Engagement</h2>
+                
+                <div class="layout-grid" style="grid-template-columns: 1fr 1fr 1fr; gap: 30px; margin-top: 20px;">
+                    
+                    <div class="card" style="text-align: center; padding: 40px 30px;">
+                        <p style="text-transform: uppercase; letter-spacing: 0.1em; font-size: 16px; font-weight: 700; color: var(--text-light); margin-bottom: 0;">Engagement Rate</p>
+                        <div class="stat-huge" style="font-size: 130px;">15%</div>
+                        <p style="font-size: 20px; color: var(--sage-light);">Based on 3-4 interactions per text.<br>Benchmark: 10-20% is excellent.</p>
+                    </div>
+
+                    <div class="card" style="text-align: center; padding: 40px 30px;">
+                        <p style="text-transform: uppercase; letter-spacing: 0.1em; font-size: 16px; font-weight: 700; color: var(--text-light); margin-bottom: 0;">iMessage Group</p>
+                        <div class="stat-huge" style="font-size: 130px; color: var(--sage-light);">23</div>
+                        <p style="font-size: 20px; color: var(--sage-light);">Active members in the chat.</p>
+                    </div>
+
+                    <div class="card" style="text-align: center; padding: 40px 30px;">
+                        <p style="text-transform: uppercase; letter-spacing: 0.1em; font-size: 16px; font-weight: 700; color: var(--text-light); margin-bottom: 0;">New Hikers (YTD)</p>
+                        <div class="stat-huge" style="font-size: 130px; color: var(--sage-light);">5</div>
+                        <p style="font-size: 20px; color: var(--sage-light);">On track for goal of 8 by December.</p>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <section class="slide">
+            <div class="slide-content" style="text-align: center;">
+                <h1 style="font-size: 120px; margin-bottom: 10px;"><span class="straight-j">J</span>oin the <span class="straight-j">J</span>ourney</h1>
+                <p style="font-family: var(--font-heading); font-style: italic; font-size: 40px; color: var(--sage-light); margin-bottom: 80px;">Mark your calendars for our next adventure.</p>
+                
+                <div class="card" style="max-width: 800px; margin: 0 auto;">
+                    <span class="label">Next Trailhead</span>
+                    <div style="font-family: var(--font-heading); font-size: 64px; font-weight: 700; color: var(--burnt-orange); line-height: 1; margin: 20px 0;">Saturday, <span class="straight-j">J</span>uly 25th</div>
+                    <p style="font-size: 36px; font-weight: 700; color: var(--pine-main); margin-bottom: 0;">Barfield Park Trail</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Progress Indicator -->
+        <div class="progress-container" id="progress-bar"></div>
+
+    </div>
+
+    <script>
+        class PresentationEngine {
+            constructor() {
+                this.stage = document.getElementById('stage');
+                this.slides = document.querySelectorAll('.slide');
+                this.progressBar = document.getElementById('progress-bar');
+                this.currentSlide = 0;
+                this.totalSlides = this.slides.length;
+                
+                this.init();
+            }
+            
+            init() {
+                // Generate navigation dots
+                for (let i = 0; i < this.totalSlides; i++) {
+                    const dot = document.createElement('div');
+                    dot.className = 'progress-dot' + (i === 0 ? ' active' : '');
+                    dot.addEventListener('click', (e) => {
+                        e.stopPropagation(); 
+                        this.goToSlide(i);
+                    });
+                    this.progressBar.appendChild(dot);
+                }
+                
+                // Initialize scaling
+                this.scaleStage();
+                window.addEventListener('resize', () => this.scaleStage());
+                
+                // Keyboard Navigation
+                window.addEventListener('keydown', (e) => {
+                    if (['ArrowRight', 'ArrowDown', ' ', 'PageDown'].includes(e.key)) {
+                        e.preventDefault();
+                        this.nextSlide();
+                    } else if (['ArrowLeft', 'ArrowUp', 'PageUp'].includes(e.key)) {
+                        e.preventDefault();
+                        this.prevSlide();
+                    }
+                });
+                
+                // Click to advance
+                this.stage.addEventListener('click', () => {
+                    this.nextSlide();
+                });
+            }
+            
+            scaleStage() {
+                const winW = window.innerWidth;
+                const winH = window.innerHeight;
+                // Scale factor to fit the 1920x1080 stage inside the window
+                const scale = Math.min(winW / 1920, winH / 1080);
+                this.stage.style.transform = `scale(${scale})`;
+            }
+            
+            goToSlide(index) {
+                if (index < 0 || index >= this.totalSlides) return;
+                
+                this.slides[this.currentSlide].classList.remove('active');
+                this.slides[index].classList.add('active');
+                
+                const dots = this.progressBar.children;
+                dots[this.currentSlide].classList.remove('active');
+                dots[index].classList.add('active');
+                
+                this.currentSlide = index;
+            }
+            
+            nextSlide() {
+                this.goToSlide(this.currentSlide + 1);
+            }
+            
+            prevSlide() {
+                this.goToSlide(this.currentSlide - 1);
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            new PresentationEngine();
+        });
+    </script>
+</body>
+</html>
