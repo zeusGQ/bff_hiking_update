@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>BFF Men’s Hiking Ministry - Mid-Year Update</title>
     
     <style>
@@ -273,67 +273,73 @@
 
         /* --- MOBILE PORTRAIT ARCHITECTURE --- */
         .portrait-mode .slide { 
-            padding: 60px 40px !important; 
+            padding: 120px 30px !important; 
         }
         
         /* Scale down the massive desktop fonts dynamically */
         .portrait-mode h1, .portrait-mode [style*="font-size: 160px"], .portrait-mode [style*="font-size: 120px"] {
-            font-size: 110px !important;
+            font-size: clamp(60px, 15vw, 110px) !important;
             line-height: 1.1 !important;
         }
         
         /* Stack the headers and turn the horizontal rule into an underline */
         .portrait-mode h2, .portrait-mode [style*="font-size: 80px"] {
-            font-size: 80px !important;
+            font-size: clamp(40px, 10vw, 80px) !important;
             flex-direction: column;
             text-align: center;
-            gap: 20px;
+            gap: 15px;
             margin-bottom: 40px !important;
         }
         .portrait-mode h2::after { 
             flex-grow: 0;
-            width: 120px; 
+            width: 80px; 
             height: 6px; 
         }
         
         .portrait-mode h3, .portrait-mode [style*="font-size: 72px"], .portrait-mode [style*="font-size: 64px"] {
-            font-size: 64px !important;
+            font-size: clamp(32px, 8vw, 64px) !important;
         }
         
         .portrait-mode p, .portrait-mode [style*="font-size: 36px"], .portrait-mode [style*="font-size: 32px"], .portrait-mode [style*="font-size: 28px"] {
-            font-size: 40px !important;
+            font-size: clamp(18px, 5vw, 40px) !important;
         }
         
         .portrait-mode [style*="font-size: 26px"], .portrait-mode [style*="font-size: 24px"], .portrait-mode [style*="font-size: 22px"], .portrait-mode [style*="font-size: 20px"] {
-            font-size: 34px !important;
+            font-size: clamp(16px, 4.5vw, 34px) !important;
         }
         
         /* Force grids to stack vertically */
         .portrait-mode .layout-grid {
             grid-template-columns: 1fr !important;
-            gap: 40px !important;
-            margin-top: 20px !important;
+            gap: 20px !important;
+            margin-top: 10px !important;
         }
         
         .portrait-mode .card {
-            padding: 40px 30px !important;
+            padding: 30px 20px !important;
             text-align: center;
         }
         
         .portrait-mode .quote-block {
-            font-size: 52px !important;
-            padding: 40px 0 0 0 !important;
+            font-size: clamp(28px, 7vw, 52px) !important;
+            padding: 30px 0 0 0 !important;
             border-left: none !important;
             border-top: 6px solid var(--burnt-orange) !important;
             text-align: center;
+            margin: 30px 0 !important;
         }
         
         .portrait-mode .stat-huge, .portrait-mode [style*="font-size: 130px"] {
-            font-size: 140px !important;
+            font-size: clamp(80px, 20vw, 140px) !important;
+            margin: 10px 0 !important;
         }
         
         .portrait-mode .slide-content {
             text-align: center !important;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
 
         .portrait-mode .progress-container {
@@ -342,8 +348,8 @@
         
         /* Larger tap targets for mobile dots */
         .portrait-mode .progress-dot {
-            width: 16px;
-            height: 16px;
+            width: 14px;
+            height: 14px;
         }
 
         /* --- PDF PRINT OVERRIDES --- */
@@ -561,7 +567,7 @@
                 this.progressBar = document.getElementById('progress-bar');
                 this.currentSlide = 0;
                 this.totalSlides = this.slides.length;
-                this.isSwiping = false; // Prevents double-skipping on touch
+                this.isSwiping = false; // Flag to prevent multi-swipes
                 
                 this.init();
             }
@@ -593,7 +599,7 @@
                     }
                 });
                 
-                // Touch Navigation for Mobile
+                // Touch Navigation for Mobile Swiping
                 let touchStartX = 0;
                 let touchStartY = 0;
                 
@@ -609,7 +615,7 @@
                     const diffX = Math.abs(touchEndX - touchStartX);
                     const diffY = Math.abs(touchEndY - touchStartY);
                     
-                    // Only trigger if horizontal swipe is greater than vertical
+                    // Only trigger if horizontal swipe is greater than vertical (prevents scrolling issues)
                     if (diffX > 50 && diffX > diffY) {
                         this.isSwiping = true;
                         if (touchEndX < touchStartX) {
@@ -635,14 +641,15 @@
                 const winH = window.innerHeight;
                 
                 if (winH > winW) {
-                    // Mobile Portrait Mode (Vertical Screen)
+                    // NATIVE FLUID LAYOUT FOR MOBILE PHONES
+                    // Removes the fixed 1920x1080 boundaries so it perfectly matches any phone screen
                     this.stage.classList.add('portrait-mode');
-                    this.stage.style.width = '1080px';
-                    this.stage.style.height = '1920px';
-                    const scale = Math.min(winW / 1080, winH / 1920);
-                    this.stage.style.transform = `scale(${scale})`;
+                    this.stage.style.width = '100vw';
+                    this.stage.style.height = '100vh';
+                    this.stage.style.transform = 'none';
                 } else {
-                    // Desktop Landscape Mode (Horizontal Screen)
+                    // SCALED FIXED LAYOUT FOR DESKTOP & LANDSCAPE
+                    // Enforces the 16:9 movie screen aspect ratio
                     this.stage.classList.remove('portrait-mode');
                     this.stage.style.width = '1920px';
                     this.stage.style.height = '1080px';
