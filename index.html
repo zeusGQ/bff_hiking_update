@@ -573,7 +573,6 @@
             }
             
             init() {
-                // Generate navigation dots
                 for (let i = 0; i < this.totalSlides; i++) {
                     const dot = document.createElement('div');
                     dot.className = 'progress-dot' + (i === 0 ? ' active' : '');
@@ -584,11 +583,20 @@
                     this.progressBar.appendChild(dot);
                 }
                 
-                // Initialize scaling
                 this.scaleStage();
-                window.addEventListener('resize', () => this.scaleStage());
                 
-                // Keyboard Navigation
+                // Add a small delay to handle mobile rotation animations smoothly
+                let resizeTimer;
+                window.addEventListener('resize', () => {
+                    clearTimeout(resizeTimer);
+                    resizeTimer = setTimeout(() => this.scaleStage(), 150);
+                });
+                
+                // Explicitly listen for physical phone rotations
+                window.addEventListener('orientationchange', () => {
+                    setTimeout(() => this.scaleStage(), 200);
+                });
+                
                 window.addEventListener('keydown', (e) => {
                     if (['ArrowRight', 'ArrowDown', ' ', 'PageDown'].includes(e.key)) {
                         e.preventDefault();
