@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>BFF Men’s Hiking Ministry - Mid-Year Update</title>
     
     <style>
@@ -34,24 +34,26 @@
         }
 
         body, html {
-            width: 100vw;
-            height: 100vh;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
             background-color: var(--pine-dark);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden; 
+            overflow: hidden; /* Prevents scrollbars */
             font-family: var(--font-body);
             color: var(--text-dark);
+            touch-action: none; /* Locks screen to prevent iOS pull-to-refresh */
         }
 
-        /* Core Frontend-Slides Architecture: Fixed 1920x1080 stage scaled by JS */
+        /* Core Frontend-Slides Architecture: Fixed virtual stage positioned absolutely */
         .deck-stage {
-            position: relative;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            /* Transform is completely handled by JS now to avoid CSS conflict */
             width: 1920px;
             height: 1080px;
             background-color: var(--canvas-bone);
-            transform-origin: center center;
             overflow: hidden;
             box-shadow: 0 0 50px rgba(0,0,0,0.5);
             /* Custom laser pointer */
@@ -271,6 +273,82 @@
             transform: scale(1.5);
         }
 
+        /* --- NATIVE MOBILE OVERRIDES --- */
+        /* These rules activate when JS detects a tall screen and adds .portrait-mode */
+        .portrait-mode .slide { 
+            padding: 80px 40px !important; 
+        }
+        
+        .portrait-mode h1, .portrait-mode [style*="font-size: 160px"], .portrait-mode [style*="font-size: 120px"] {
+            font-size: 110px !important;
+            line-height: 1.1 !important;
+        }
+        
+        .portrait-mode h2, .portrait-mode [style*="font-size: 80px"] {
+            font-size: 72px !important;
+            flex-direction: column;
+            text-align: center;
+            gap: 15px;
+            margin-bottom: 40px !important;
+        }
+
+        .portrait-mode h2::after { 
+            flex-grow: 0;
+            width: 120px; 
+            height: 6px; 
+        }
+        
+        .portrait-mode h3, .portrait-mode [style*="font-size: 72px"], .portrait-mode [style*="font-size: 64px"] {
+            font-size: 56px !important;
+        }
+        
+        .portrait-mode p, .portrait-mode [style*="font-size: 36px"], .portrait-mode [style*="font-size: 32px"], .portrait-mode [style*="font-size: 28px"] {
+            font-size: 36px !important;
+        }
+        
+        .portrait-mode [style*="font-size: 26px"], .portrait-mode [style*="font-size: 24px"], .portrait-mode [style*="font-size: 22px"], .portrait-mode [style*="font-size: 20px"] {
+            font-size: 32px !important;
+        }
+        
+        .portrait-mode .layout-grid {
+            grid-template-columns: 1fr !important;
+            gap: 24px !important;
+            margin-top: 20px !important;
+        }
+        
+        .portrait-mode .card {
+            padding: 30px !important;
+            text-align: center;
+        }
+        
+        .portrait-mode .quote-block {
+            font-size: 48px !important;
+            padding: 40px 0 0 0 !important;
+            border-left: none !important;
+            border-top: 6px solid var(--burnt-orange) !important;
+            text-align: center;
+            margin: 40px 0 !important;
+        }
+        
+        .portrait-mode .stat-huge, .portrait-mode [style*="font-size: 130px"] {
+            font-size: 130px !important;
+            margin: 10px 0 !important;
+        }
+        
+        .portrait-mode .slide-content {
+            text-align: center !important;
+        }
+
+        .portrait-mode .progress-container {
+            bottom: 30px !important;
+            gap: 24px;
+        }
+        
+        .portrait-mode .progress-dot {
+            width: 20px;
+            height: 20px;
+        }
+
         /* --- PDF PRINT OVERRIDES --- */
         @media print {
             @page {
@@ -292,9 +370,12 @@
             }
 
             .deck-stage {
+                position: relative; /* Revert Absolute position for printing */
+                top: auto;
+                left: auto;
+                transform: none !important;
                 width: 100%;
                 height: auto;
-                transform: none !important;
                 box-shadow: none;
                 overflow: visible !important;
             }
@@ -327,7 +408,7 @@
             <div class="slide-content" style="text-align: center;">
                 <span class="label" style="background-color: var(--sage-light); color: var(--pine-dark);">Mid-Year Update</span>
                 <h1 style="font-size: 160px; margin-top: 40px;">BFF Men’s <br><span class="accent-text">Hiking Ministry</span></h1>
-                <p style="text-transform: uppercase; letter-spacing: 0.2em; font-size: 28px; margin-top: 60px; color: var(--text-light);">July 2026</p>
+                <p style="text-transform: uppercase; letter-spacing: 0.2em; font-size: 28px; margin-top: 60px; color: var(--text-light);"><span class="straight-j">J</span>uly 2026</p>
             </div>
         </section>
 
@@ -412,7 +493,7 @@
                     <!-- Upcoming Dates -->
                     <div class="card" style="background-color: var(--pine-dark); color: var(--text-light); border: none;">
                         <div style="margin-bottom: 40px;">
-                            <h3 style="color: var(--burnt-orange); font-size: 36px; margin-bottom: 5px;">July 25</h3>
+                            <h3 style="color: var(--burnt-orange); font-size: 36px; margin-bottom: 5px;"><span class="straight-j">J</span>uly 25</h3>
                             <p style="font-weight: 700; font-size: 28px; margin-bottom: 5px; color: var(--text-light);">Barfield Park Trail</p>
                             <p style="font-size: 22px; color: var(--sage-light);">Mid-summer morning hike.</p>
                         </div>
@@ -467,7 +548,7 @@
                 
                 <div class="card" style="max-width: 800px; margin: 0 auto;">
                     <span class="label">Next Trailhead</span>
-                    <div style="font-family: var(--font-heading); font-size: 64px; font-weight: 700; color: var(--burnt-orange); line-height: 1; margin: 20px 0;">Saturday, July 25th</div>
+                    <div style="font-family: var(--font-heading); font-size: 64px; font-weight: 700; color: var(--burnt-orange); line-height: 1; margin: 20px 0;">Saturday, <span class="straight-j">J</span>uly 25th</div>
                     <p style="font-size: 36px; font-weight: 700; color: var(--pine-main); margin-bottom: 0;">Barfield Park Trail</p>
                 </div>
             </div>
@@ -486,6 +567,7 @@
                 this.progressBar = document.getElementById('progress-bar');
                 this.currentSlide = 0;
                 this.totalSlides = this.slides.length;
+                this.isSwiping = false; 
                 
                 this.init();
             }
@@ -517,18 +599,73 @@
                     }
                 });
                 
+                // Touch Navigation for Mobile Swiping
+                let touchStartX = 0;
+                let touchStartY = 0;
+                
+                this.stage.addEventListener('touchstart', (e) => {
+                    touchStartX = e.changedTouches[0].screenX;
+                    touchStartY = e.changedTouches[0].screenY;
+                }, {passive: true});
+                
+                this.stage.addEventListener('touchend', (e) => {
+                    const touchEndX = e.changedTouches[0].screenX;
+                    const touchEndY = e.changedTouches[0].screenY;
+                    
+                    const diffX = Math.abs(touchEndX - touchStartX);
+                    const diffY = Math.abs(touchEndY - touchStartY);
+                    
+                    // Only trigger if horizontal swipe is greater than vertical
+                    if (diffX > 50 && diffX > diffY) {
+                        this.isSwiping = true;
+                        if (touchEndX < touchStartX) {
+                            this.nextSlide();
+                        } else {
+                            this.prevSlide();
+                        }
+                        // Reset flag to prevent click event overlap
+                        setTimeout(() => this.isSwiping = false, 300);
+                    }
+                }, {passive: true});
+                
                 // Click to advance
                 this.stage.addEventListener('click', () => {
-                    this.nextSlide();
+                    if (!this.isSwiping) {
+                        this.nextSlide();
+                    }
                 });
             }
             
             scaleStage() {
                 const winW = window.innerWidth;
                 const winH = window.innerHeight;
-                // Scale factor to fit the 1920x1080 stage inside the window
-                const scale = Math.min(winW / 1920, winH / 1080);
-                this.stage.style.transform = `scale(${scale})`;
+                
+                if (winH > winW) {
+                    // --- NATIVE FLUID MOBILE MODE ---
+                    // Locks the virtual canvas to a fixed 1080px width, dynamically calculates height
+                    // based on device ratio, and uses exact Matrix Transform scaling to map it to the glass.
+                    this.stage.classList.add('portrait-mode');
+                    
+                    const baseWidth = 1080;
+                    const scale = winW / baseWidth;
+                    const dynamicHeight = winH / scale;
+                    
+                    this.stage.style.width = `${baseWidth}px`;
+                    this.stage.style.height = `${dynamicHeight}px`;
+                    // Centering and Scaling MUST be applied together to override Absolute Positioning
+                    this.stage.style.transform = `translate(-50%, -50%) scale(${scale})`;
+                    
+                } else {
+                    // --- FIXED LAYOUT FOR DESKTOP & LANDSCAPE ---
+                    this.stage.classList.remove('portrait-mode');
+                    
+                    this.stage.style.width = '1920px';
+                    this.stage.style.height = '1080px';
+                    
+                    const scale = Math.min(winW / 1920, winH / 1080);
+                    // Standard centered 16:9 shrink
+                    this.stage.style.transform = `translate(-50%, -50%) scale(${scale})`;
+                }
             }
             
             goToSlide(index) {
